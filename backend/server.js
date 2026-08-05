@@ -1,23 +1,12 @@
-// Mengimpor library express
+// Mengimpor library express yang sudah diinstal
 const express = require("express");
 
 // Membuat instance aplikasi Express
 const app = express();
 const PORT = 3000;
 
-// Middleware untuk memparsing body bertipe JSON
+// Middleware bawaan agar Express bisa membaca JSON dari request
 app.use(express.json());
-
-// Middleware penanganan error untuk format JSON yang tidak valid (misal salah ketik tanda kurung/kutip)
-app.use((err, req, res, next) => {
-  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    return res.status(400).json({
-      status: "error",
-      message: "Format JSON yang dikirimkan tidak valid!",
-    });
-  }
-  next();
-});
 
 // Data sementara di memori
 let produk = [
@@ -37,6 +26,7 @@ app.get("/", (req, res) => {
 
 // Route untuk mengecek status ping server
 app.get("/api/ping", (req, res) => {
+  // res.json() otomatis mengubah objek JavaScript menjadi format JSON
   res.json({
     status: "success",
     message: "pong",
@@ -46,25 +36,16 @@ app.get("/api/ping", (req, res) => {
 
 // GET /api/products -> Mengambil semua produk
 app.get("/api/products", (req, res) => {
-  res.json({
-    status: "success",
-    jumlahData: produk.length,
-    data: produk,
-  });
+  res.json({ status: "success", data: produk });
 });
 
 // GET /api/products/:id -> Mengambil satu produk berdasarkan id
 app.get("/api/products/:id", (req, res) => {
   const id = Number(req.params.id);
-  
-  if (isNaN(id)) {
-    return res.status(400).json({ status: "error", message: "ID produk harus berupa angka" });
-  }
-
   const item = produk.find((p) => p.id === id);
 
   if (!item) {
-    return res.status(404).json({ status: "error", message: `Produk dengan ID ${id} tidak ditemukan` });
+    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
   }
 
   res.json({ status: "success", data: item });
@@ -74,100 +55,60 @@ app.get("/api/products/:id", (req, res) => {
 app.post("/api/products", (req, res) => {
   const { nama, harga } = req.body;
 
-  // Validasi input
-  if (!nama || typeof nama !== "string" || nama.trim() === "") {
+  // Validasi sederhana di sisi backend
+  if (!nama || !harga || harga <= 0) {
     return res.status(400).json({
       status: "error",
-      message: "Nama produk wajib diisi dan harus berupa teks",
+      message: "Nama dan harga (lebih dari 0) wajib diisi",
     });
   }
 
-  if (harga === undefined || isNaN(Number(harga)) || Number(harga) <= 0) {
-    return res.status(400).json({
-      status: "error",
-      message: "Harga wajib diisi dan harus berupa angka lebih besar dari 0",
-    });
-  }
-
-  const produkBaru = {
-    id: idBerikutnya++,
-    nama: nama.trim(),
-    harga: Number(harga),
-  };
-
+  const produkBaru = { id: idBerikutnya++, nama, harga };
   produk.push(produkBaru);
 
-  res.status(201).json({
-    status: "success",
-    message: "Produk berhasil ditambahkan",
-    data: produkBaru,
-  });
+  res.status(201).json({ status: "success", data: produkBaru });
 });
 
 // PUT /api/products/:id -> Memperbarui produk berdasarkan id
 app.put("/api/products/:id", (req, res) => {
   const id = Number(req.params.id);
-
-  if (isNaN(id)) {
-    return res.status(400).json({ status: "error", message: "ID produk harus berupa angka" });
-  }
-
   const { nama, harga } = req.body;
   const item = produk.find((p) => p.id === id);
 
   if (!item) {
-    return res.status(404).json({ status: "error", message: `Produk dengan ID ${id} tidak ditemukan` });
+    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
   }
 
-  if (!nama || typeof nama !== "string" || nama.trim() === "") {
+  if (!nama || !harga || harga <= 0) {
     return res.status(400).json({
       status: "error",
-      message: "Nama produk wajib diisi dan harus berupa teks",
+      message: "Nama dan harga (lebih dari 0) wajib diisi",
     });
   }
 
-  if (harga === undefined || isNaN(Number(harga)) || Number(harga) <= 0) {
-    return res.status(400).json({
-      status: "error",
-      message: "Harga wajib diisi dan harus berupa angka lebih besar dari 0",
-    });
-  }
+  item.nama = nama;
+  item.harga = harga;
 
-  item.nama = nama.trim();
-  item.harga = Number(harga);
-
-  res.json({
-    status: "success",
-    message: `Produk dengan ID ${id} berhasil diperbarui`,
-    data: item,
-  });
+  res.json({ status: "success", data: item });
 });
 
 // DELETE /api/products/:id -> Menghapus produk berdasarkan id
 app.delete("/api/products/:id", (req, res) => {
   const id = Number(req.params.id);
+  const adaProduk = produk.some((p) => p.id === id);
 
-  if (isNaN(id)) {
-    return res.status(400).json({ status: "error", message: "ID produk harus berupa angka" });
+  if (!adaProduk) {
+    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
   }
 
-  const index = produk.findIndex((p) => p.id === id);
+  produk = produk.filter((p) => p.id !== id);
 
-  if (index === -1) {
-    return res.status(404).json({ status: "error", message: `Produk dengan ID ${id} tidak ditemukan` });
-  }
-
-  // Menghapus data dari array menggunakan splice
-  const produkDihapus = produk.splice(index, 1);
-
-  res.json({
-    status: "success",
-    message: `Produk id ${id} berhasil dihapus`,
-    data: produkDihapus[0],
-  });
+  // PERBAIKAN: Menambahkan backtick (``) pada template literal
+  res.json({ status: "success", message: `Produk id ${id} berhasil dihapus` });
 });
 
-// Menjalankan server
+// Menjalankan server dan mendengarkan di PORT yang ditentukan
 app.listen(PORT, () => {
-  console.log(`Server berjalan mulus di http://localhost:${PORT}`);
+  // PERBAIKAN: Menambahkan backtick (``) pada template literal
+  console.log(`Server berjalan di http://localhost:${PORT}`);
 });
