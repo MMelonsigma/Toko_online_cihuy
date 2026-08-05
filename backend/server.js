@@ -1,6 +1,5 @@
 // Mengimpor library express dan cors yang sudah diinstal
 const express = require("express");
-const cors = require("cors");
 
 // Membuat instance aplikasi Express
 const app = express();
@@ -8,7 +7,6 @@ const PORT = 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors()); // Agar API bisa diakses dari frontend berbeda port
 
 // Data sementara di memori
 let produk = [
@@ -110,4 +108,4 @@ app.delete("/api/products/:id", (req, res) => {
 // Menjalankan server dan mendengarkan di PORT yang ditentukan
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
-});y
+});
