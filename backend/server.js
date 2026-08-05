@@ -17,11 +17,21 @@ let produk = [
 ];
 
 // Variabel penghitung id agar produk baru selalu punya id unik
-let idBerikutnya = 4;
+let idBerikutnya = 5;
 
 // Route paling dasar, hanya untuk mengecek server hidup
 app.get("/", (req, res) => {
   res.send("Selamat datang di API TokoKita!");
+});
+
+// Route untuk mengecek status ping server
+app.get("/api/ping", (req, res) => {
+  // res.json() otomatis mengubah objek JavaScript menjadi format JSON
+  res.json({
+    status: "success",
+    message: "pong",
+    waktuServer: new Date().toISOString(),
+  });
 });
 
 // GET /api/products -> Mengambil semua produk
