@@ -1,12 +1,14 @@
-// Mengimpor library express yang sudah diinstal
+// Mengimpor library express dan cors yang sudah diinstal
 const express = require("express");
+const cors = require("cors");
 
 // Membuat instance aplikasi Express
 const app = express();
 const PORT = 3000;
 
-// Middleware bawaan agar Express bisa membaca JSON dari request
+// Middleware
 app.use(express.json());
+app.use(cors()); // Agar API bisa diakses dari frontend berbeda port
 
 // Data sementara di memori
 let produk = [
@@ -26,7 +28,6 @@ app.get("/", (req, res) => {
 
 // Route untuk mengecek status ping server
 app.get("/api/ping", (req, res) => {
-  // res.json() otomatis mengubah objek JavaScript menjadi format JSON
   res.json({
     status: "success",
     message: "pong",
@@ -56,14 +57,14 @@ app.post("/api/products", (req, res) => {
   const { nama, harga } = req.body;
 
   // Validasi sederhana di sisi backend
-  if (!nama || !harga || harga <= 0) {
+  if (!nama || harga === undefined || Number(harga) <= 0) {
     return res.status(400).json({
       status: "error",
       message: "Nama dan harga (lebih dari 0) wajib diisi",
     });
   }
 
-  const produkBaru = { id: idBerikutnya++, nama, harga };
+  const produkBaru = { id: idBerikutnya++, nama, harga: Number(harga) };
   produk.push(produkBaru);
 
   res.status(201).json({ status: "success", data: produkBaru });
@@ -79,7 +80,7 @@ app.put("/api/products/:id", (req, res) => {
     return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
   }
 
-  if (!nama || !harga || harga <= 0) {
+  if (!nama || harga === undefined || Number(harga) <= 0) {
     return res.status(400).json({
       status: "error",
       message: "Nama dan harga (lebih dari 0) wajib diisi",
@@ -87,7 +88,7 @@ app.put("/api/products/:id", (req, res) => {
   }
 
   item.nama = nama;
-  item.harga = harga;
+  item.harga = Number(harga);
 
   res.json({ status: "success", data: item });
 });
