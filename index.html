@@ -1,3 +1,5 @@
+// *index.html*
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,172 +8,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TokoKita - belanja online mudah dan terpercaya" />
     <title>TokoKita - Belanja Online Mudah</title>
-
-    <!-- Memuat Tailwind CSS langsung dari CDN -->
+    <!-- Memuat Tailwind CSS langsung dari CDN, tanpa perlu instalasi -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body class="bg-gray-50">
 
     <!-- NAVBAR -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <!-- Navigasi diisi di Langkah 3 -->
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between relative">
             <!-- Logo Toko -->
             <h1 class="text-xl font-bold text-blue-700">TokoKita</h1>
 
-            <!-- Menu Navigasi (Desktop) -->
+            <!-- Menu Navigasi: tersembunyi di mobile, muncul di tablet ke atas -->
             <nav class="hidden md:flex gap-6 text-gray-600">
-                <a href="#hero" class="hover:text-blue-700 transition">Beranda</a>
-                <a href="#catalog" class="hover:text-blue-700 transition">Katalog</a>
-                <a href="#about" class="hover:text-blue-700 transition">Tentang Kami</a>
+                <a href="#hero" class="hover:text-blue-700">Beranda</a>
+                <a href="#catalog" class="hover:text-blue-700">Katalog</a>
+                <a href="#about" class="hover:text-blue-700">Tentang Kami</a>
             </nav>
-
-            <!-- Aksi Kanan (Keranjang & Hamburger) -->
             <div class="flex items-center gap-3">
-                <button id="tombol-keranjang" class="bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-800 transition">
+                <!-- Tombol Keranjang -->
+                <button id="tombol-keranjang" class="bg-blue-700 
+                    text-white px-4 py-2 rounded-lg text-sm">
                     Keranjang (0)
                 </button>
-                <button id="tombol-hamburger" class="md:hidden text-gray-800 text-2xl focus:outline-none p-2">&#9776;</button>
-            </div>
-        </div>
+                <!-- Tambahan Langkah 5 -->
+                <div id="menu-mobile" class="hidden absolute left-0 
+                    top-full mt-2 w-full bg-white shadow-lg rounded-b-xl p-4 md:hidden z-20">
+                    <ul class="flex flex-col gap-2">
+                        <li><a href="#hero" class="hover:text-blue-700">Beranda</a></li>
+                        <li><a href="#catalog" class="hover:text-blue-700">Katalog</a></li>
+                        <li><a href="#about" class="hover:text-blue-700">Tentang Kami</a></li>
+                    </ul>
+                </div>
 
-        <!-- Menu Mobile (Dropdown) -->
-        <div id="menu-mobile" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 shadow-lg">
-            <nav class="flex flex-col gap-3 text-gray-600">
-                <a href="#hero" class="hover:text-blue-700 block py-1">Beranda</a>
-                <a href="#catalog" class="hover:text-blue-700 block py-1">Katalog</a>
-                <a href="#about" class="hover:text-blue-700 block py-1">Tentang Kami</a>
-            </nav>
+                <!-- Ikon Hamburger, hanya tampil di mobile -->
+                <button id="tombol-hamburger" class="md:hidden text-gray-700 text-2xl">&#9776;</button>
+            </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-grow">
-        
-        <!-- HERO SECTION -->
-        <section id="hero" class="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
-            <div class="max-w-7xl mx-auto px-4 py-16 text-center">
-                <h2 class="text-3xl md:text-5xl font-bold mb-4">
-                    Belanja Mudah, Harga Bersahabat
-                </h2>
-                <p class="text-blue-100 mb-6">
-                    Temukan berbagai produk pilihan hanya di TokoKita
-                </p>
-                <a href="#catalog"
-                    class="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition inline-block">
-                    Lihat Katalog
-                </a>
+    <main>
+        <section id="hero"><!-- Diisi di Langkah 4 -->
+            <div class="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
+                <div class="max-w-7xl mx-auto px-4 py-16 text-center">
+                    <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                        Belanja Mudah, Harga Bersahabat
+                    </h2>
+                    <p class="text-blue-100 mb-6">
+                        Temukan berbagai produk pilihan hanya di TokoKita
+                    </p>
+                    <a href="#catalog"
+                        class="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition">
+                        Lihat Katalog
+                    </a>
+                </div>
             </div>
         </section>
+        <section id="catalog"><!-- Diisi di Langkah 5 -->
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <h3 class="text-2xl font-bold text-gray-800 mb-8">Produk Pilihan</h3>
 
-        <!-- CATALOG SECTION -->
-        <section id="catalog" class="max-w-7xl mx-auto px-4 py-12">
-            <h3 class="text-2xl font-bold text-gray-800 mb-8">Produk Pilihan</h3>
+                <!-- grid-cols-2 di HP, md:grid-cols-3 di tablet, lg:grid-cols-5 di desktop -->
+                <div id="grid-katalog" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-            <!-- Grid Produk dengan id="grid-katalog" untuk Event Delegation -->
-            <div id="grid-katalog" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-
-                <!-- Produk 1: Kaos Tayo Premium dengan Badge Diskon Kuning & Teks Hitam -->
-                <div class="relative bg-white rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
-                    <span class="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded shadow">
-                        Diskon 20%
-                    </span>
-                    <div>
-                        <img src="assets/tayo.jpg" alt="Kaos Tayo" class="w-full h-40 object-cover rounded-lg mb-3" />
-                        <h4 class="font-semibold text-gray-800">Kaos Tayo Premium</h4>
+                    <!-- Kartu Produk dengan Badge Diskon -->
+                    <div class="relative bg-white rounded-xl shadow hover:shadow-lg transition p-4">
+                        <span class="absolute top-2 left-2 bg-yellow-400 text-xs font-bold
+                   px-2 py-1 rounded">DISKON 20%</span>
+                        <img src="assets/images/tayo.jpg" alt="Kaos Tayo Premium"
+                            class="w-full h-40 object-cover rounded-lg mb-3" />
+                        <h4 class="font-semibold text-gray-800">Kaos Tayo Premium
+Rp 89.000</h4>
                         <p class="text-blue-700 font-bold mt-1">Rp 89.000</p>
+                        <button class="btn-tambah-keranjang w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm
+                     hover:bg-blue-800 transition">
+                            Tambah ke Keranjang
+                        </button>
                     </div>
-                    <button class="w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm hover:bg-blue-800 transition btn-tambah-keranjang">
-                        Tambah ke Keranjang
-                    </button>
-                </div>
 
-                <!-- Produk 2 -->
-                <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
-                    <div>
-                        <img src="assets/xodiac.jpg" alt="Kaos Xodiac" class="w-full h-40 object-cover rounded-lg mb-3" />
+                    <!-- Kartu Produk tanpa Badge (versi standar) -->
+                    <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-4">
+                        <img src="assets/images/xodiac.jpg" alt="Kaos Xodiac ori"
+                            class="w-full h-40 object-cover rounded-lg mb-3" />
                         <h4 class="font-semibold text-gray-800">Kaos Xodiac ori</h4>
                         <p class="text-blue-700 font-bold mt-1">Rp 145.000</p>
+                        <button class="btn-tambah-keranjang w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm
+                     hover:bg-blue-800 transition">
+                            Tambah ke Keranjang
+                        </button>
                     </div>
-                    <button class="w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm hover:bg-blue-800 transition btn-tambah-keranjang">
-                        Tambah ke Keranjang
-                    </button>
-                </div>
 
-                <!-- Produk 3 -->
-                <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
-                    <div>
-                        <img src="assets/sepatu mekdi bts.jpg" alt="Sepatu McDonald BTS" class="w-full h-40 object-cover rounded-lg mb-3" />
-                        <h4 class="font-semibold text-gray-800">Sepatu mcdonald bts original</h4>
+                    <!-- Kartu Produk tanpa Badge (versi standar) -->
+                    <div class="relative bg-white rounded-xl shadow hover:shadow-lg transition p-4">
+                        <span class="absolute top-2 left-2 bg-yellow-400 text-xs font-bold
+                                px-2 py-1 rounded">DISKON 20%</span>
+                        <img src="assets/images/sepatu mekdi bts.jpg" alt="Sepatu Mekdi BTS"
+                            class="w-full h-40 object-cover rounded-lg mb-3" />
+                        <h4 class="font-semibold text-gray-800">Sepatu Mekdi BTS</h4>
                         <p class="text-blue-700 font-bold mt-1">Rp 800.000</p>
+                        <button class="btn-tambah-keranjang w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm
+                     hover:bg-blue-800 transition">
+                            Tambah ke Keranjang
+                        </button>
                     </div>
-                    <button class="w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm hover:bg-blue-800 transition btn-tambah-keranjang">
-                        Tambah ke Keranjang
-                    </button>
-                </div>
 
-                <!-- Produk 4 -->
-                <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
-                    <div>
-                        <img src="assets/kuntilanak.jpg" alt="Rambut Kuntilanak" class="w-full h-40 object-cover rounded-lg mb-3" />
-                        <h4 class="font-semibold text-gray-800">Rambut kuntilanak asli</h4>
+                    <!-- Kartu Produk tanpa Badge (versi standar) -->
+                    <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-4">
+                        <img src="assets/images/kuntilanak.jpg" alt="Rambut Kuntilanak Asli"
+                            class="w-full h-40 object-cover rounded-lg mb-3" />
+                        <h4 class="font-semibold text-gray-800">Rambut Kuntilanak Asli</h4>
                         <p class="text-blue-700 font-bold mt-1">Rp 1.200.000</p>
+                        <button class="btn-tambah-keranjang w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm
+                     hover:bg-blue-800 transition">
+                            Tambah ke Keranjang
+                        </button>
                     </div>
-                    <button class="w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm hover:bg-blue-800 transition btn-tambah-keranjang">
-                        Tambah ke Keranjang
-                    </button>
+
+                    <!-- Salin salah satu kartu di atas untuk produk ke-3 s.d. ke-8 -->
+
                 </div>
-
             </div>
-
-            <!-- Form Tambah Produk Baru -->
-            <form id="form-produk" class="bg-white rounded-xl shadow p-6 max-w-md mx-auto">
+            <form id="form-produk" class="bg-white rounded-xl shadow p-6 mt-8 max-w-md mx-auto">
                 <h4 class="font-semibold text-gray-800 mb-4">Tambah Produk Baru</h4>
 
                 <label class="block text-sm text-gray-600 mb-1">Nama Produk</label>
-                <input type="text" id="input-nama" required class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="text" id="input-nama" required class="w-full border rounded-lg px-3 py-2 mb-3" />
 
                 <label class="block text-sm text-gray-600 mb-1">Harga (Rp)</label>
-                <!-- Diubah menjadi tipe text agar bisa diketik manual dengan bebas -->
-                <input type="text" id="input-harga" required placeholder="Contoh: 50000" class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="number" id="input-harga" required min="0"
+                    class="w-full border rounded-lg px-3 py-2 mb-3" />
 
                 <p id="pesan-error" class="text-red-600 text-sm mb-3 hidden"></p>
 
-                <button type="submit" class="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition">
+                <button type="submit" class="btn-tambah-keranjang w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800">
                     Tambahkan Produk
                 </button>
             </form>
 
         </section>
-
-        <!-- ABOUT / TESTIMONIAL SECTION -->
-        <section id="about" class="bg-white py-12 border-t">
-            <div class="max-w-7xl mx-auto px-4">
-                <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">
-                    Apa Kata Pelanggan Kami?
-                </h3>
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="flex-1 bg-gray-50 rounded-xl p-6 shadow-sm">
-                        <p class="text-gray-600 italic">
-                            "Pelayanan cepat dan produk original! Sangat puas belanja di sini hayuuuuk."
-                        </p>
-                        <p class="mt-4 font-semibold text-gray-800">- Dita, Sentinel</p>
-                    </div>
-                    <div class="flex-1 bg-gray-50 rounded-xl p-6 shadow-sm">
-                        <p class="text-gray-600 italic">
-                            "Pengiriman aman, kemasan rapi. Recommended seller (tapi boong)"
-                        </p>
-                        <p class="mt-4 font-semibold text-gray-800">- Rafi, Jakarta</p>
+        <section id="about"><!-- Diisi di Sesi 3, Langkah 6 -->
+            <div class="bg-white py-12">
+                <div class="max-w-7xl mx-auto px-4">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">
+                        Apa Kata Pelanggan Kami?
+                    </h3>
+                    <!-- flex-col di mobile, flex-row di tablet ke atas -->
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1 bg-gray-50 rounded-xl p-6">
+                            <p class="text-gray-600 italic">
+                                "Pengiriman cepat dan barangnya sesuai foto. Recommended!"
+                            </p>
+                            <p class="mt-4 font-semibold text-gray-800">— Dita, Bekasi</p>
+                        </div>
+                        <div class="flex-1 bg-gray-50 rounded-xl p-6">
+                            <p class="text-gray-600 italic">
+                                "Harganya bersaing, kualitas oke. Bakal belanja lagi."
+                            </p>
+                            <p class="mt-4 font-semibold text-gray-800">— Rafi, Surabaya</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-gray-900 text-gray-300">
+    <footer class="bg-gray-900 text-gray-300"><!-- Diisi di Sesi 3, Langkah 7 -->
         <div class="max-w-7xl mx-auto px-4 py-10">
+            <!-- grid-cols-1 di mobile, grid-cols-3 di tablet ke atas -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
                 <div>
                     <h5 class="text-white font-semibold mb-3">TokoKita</h5>
@@ -180,8 +186,8 @@
                 <div>
                     <h5 class="text-white font-semibold mb-3">Tautan Cepat</h5>
                     <ul class="space-y-2">
-                        <li><a href="#catalog" class="hover:text-white transition">Katalog</a></li>
-                        <li><a href="#about" class="hover:text-white transition">Tentang Kami</a></li>
+                        <li><a href="#catalog" class="hover:text-white">Katalog</a></li>
+                        <li><a href="#about" class="hover:text-white">Tentang Kami</a></li>
                     </ul>
                 </div>
                 <div>
@@ -191,13 +197,13 @@
                 </div>
             </div>
             <hr class="border-gray-700 my-6" />
-            <p class="text-center text-xs text-gray-400">
+            <p class="text-center text-xs">
                 &copy; 2026 TokoKita. Dibuat dalam Bootcamp Fullstack Web Development.
             </p>
         </div>
+
     </footer>
 
-    <!-- Script JS -->
     <script src="script.js" defer></script>
 </body>
 
