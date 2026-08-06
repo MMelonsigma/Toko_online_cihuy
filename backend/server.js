@@ -1,114 +1,82 @@
-// Mengimpor library express yang sudah diinstal
 const express = require("express");
+const cors = require("cors");
+const db = require("./db"); // Mengimpor koneksi database
 
-// Membuat instance aplikasi Express
 const app = express();
 const PORT = 3000;
 
-// Middleware bawaan agar Express bisa membaca JSON dari request
+// Middleware
+app.use(cors()); // Mengizinkan request dari origin lain
 app.use(express.json());
-
-// Data sementara di memori
-let produk = [
-  { id: 1, nama: "Kaos Tayo Premium", harga: 89000 },
-  { id: 2, nama: "Kaos Xodiac ori", harga: 145000 },
-  { id: 3, nama: "Sepatu mcdonald bts original", harga: 800000 },
-  { id: 4, nama: "Rambut kuntilanak asli", harga: 1200000 },
-];
-
-// Variabel penghitung id agar produk baru selalu punya id unik
-let idBerikutnya = 5;
 
 // Route paling dasar, hanya untuk mengecek server hidup
 app.get("/", (req, res) => {
-  res.send("Selamat datang di API TokoKita!");
+    res.send("Selamat datang di API TokoKita!");
 });
 
-// Route untuk mengecek status ping server
-app.get("/api/ping", (req, res) => {
-  // res.json() otomatis mengubah objek JavaScript menjadi format JSON
-  res.json({
-    status: "success",
-    message: "pong",
-    waktuServer: new Date().toISOString(),
-  });
-});
-
-// GET /api/products -> Mengambil semua produk
+// GET /api/products -> Mengambil semua produk dari database
 app.get("/api/products", (req, res) => {
-  res.json({ status: "success", data: produk });
+    const data = db.prepare("SELECT * FROM produk").all();
+    res.json({ status: "success", data });
 });
 
-// GET /api/products/:id -> Mengambil satu produk berdasarkan id
+// GET /api/products/:id -> Mengambil satu produk berdasarkan id dari database
 app.get("/api/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const item = produk.find((p) => p.id === id);
+    const id = Number(req.params.id);
+    const item = db.prepare("SELECT * FROM produk WHERE id = ?").get(id);
 
-  if (!item) {
-    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
-  }
+    if (!item) {
+        return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
+    }
 
-  res.json({ status: "success", data: item });
+    res.json({ status: "success", data: item });
 });
 
-// POST /api/products -> Menambah produk baru
+// POST /api/products -> Menyimpan produk baru ke database
 app.post("/api/products", (req, res) => {
-  const { nama, harga } = req.body;
+    const { nama, harga } = req.body;
 
-  // Validasi sederhana di sisi backend
-  if (!nama || !harga || harga <= 0) {
-    return res.status(400).json({
-      status: "error",
-      message: "Nama dan harga (lebih dari 0) wajib diisi",
-    });
-  }
+    if (!nama || !harga || harga <= 0) {
+        return res.status(400).json({ status: "error", message: "Nama dan harga wajib diisi" });
+    }
 
-  const produkBaru = { id: idBerikutnya++, nama, harga };
-  produk.push(produkBaru);
+    const hasil = db.prepare("INSERT INTO produk (nama, harga) VALUES (?, ?)").run(nama, harga);
+    const produkBaru = { id: hasil.lastInsertRowid, nama, harga };
 
-  res.status(201).json({ status: "success", data: produkBaru });
+    res.status(201).json({ status: "success", data: produkBaru });
 });
 
-// PUT /api/products/:id -> Memperbarui produk berdasarkan id
+// PUT /api/products/:id -> Memperbarui produk di database
 app.put("/api/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const { nama, harga } = req.body;
-  const item = produk.find((p) => p.id === id);
+    const id = Number(req.params.id);
+    const { nama, harga } = req.body;
 
-  if (!item) {
-    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
-  }
+    if (!nama || !harga || harga <= 0) {
+        return res.status(400).json({ status: "error", message: "Nama dan harga wajib diisi" });
+    }
 
-  if (!nama || !harga || harga <= 0) {
-    return res.status(400).json({
-      status: "error",
-      message: "Nama dan harga (lebih dari 0) wajib diisi",
-    });
-  }
+    const hasil = db.prepare("UPDATE produk SET nama = ?, harga = ? WHERE id = ?").run(nama, harga, id);
 
-  item.nama = nama;
-  item.harga = harga;
+    if (hasil.changes === 0) {
+        return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
+    }
 
-  res.json({ status: "success", data: item });
+    res.json({ status: "success", data: { id, nama, harga } });
 });
 
-// DELETE /api/products/:id -> Menghapus produk berdasarkan id
+// DELETE /api/products/:id -> Menghapus produk dari database
 app.delete("/api/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const adaProduk = produk.some((p) => p.id === id);
+    const id = Number(req.params.id);
+    const hasil = db.prepare("DELETE FROM produk WHERE id = ?").run(id);
 
-  if (!adaProduk) {
-    return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
-  }
+    if (hasil.changes === 0) {
+        return res.status(404).json({ status: "error", message: "Produk tidak ditemukan" });
+    }
 
-  produk = produk.filter((p) => p.id !== id);
-
-  // PERBAIKAN: Menambahkan backtick (``) pada template literal
-  res.json({ status: "success", message: `Produk id ${id} berhasil dihapus` });
+    res.json({ status: "success", message: `Produk id ${id} berhasil dihapus` });
 });
 
-// Menjalankan server dan mendengarkan di PORT yang ditentukan
+// Menjalankan server
 app.listen(PORT, () => {
-  // PERBAIKAN: Menambahkan backtick (``) pada template literal
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+    console.log(`Server berjalan di http://localhost:${PORT}`);
 });

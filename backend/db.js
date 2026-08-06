@@ -1,37 +1,43 @@
 const Database = require("better-sqlite3");
 
-// Membuat atau membuka file database bernama tokokita.db
+// Membuka atau membuat database
 const db = new Database("tokokita.db");
 
-// Membuat tabel 'produk' jika belum ada
+// Membuat tabel jika belum ada
 db.exec(`
   CREATE TABLE IF NOT EXISTS produk (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nama TEXT NOT NULL,
-    harga INTEGER NOT NULL
-  )
+    harga INTEGER NOT NULL CHECK (harga > 0)
+  );
 `);
 
-// Mengecek apakah tabel produk masih kosong
-const jumlahProduk = db.prepare("SELECT COUNT(*) AS total FROM produk").get();
+// Mengecek apakah tabel masih kosong
+const { total } = db
+  .prepare("SELECT COUNT(*) AS total FROM produk")
+  .get();
 
-if (jumlahProduk.total === 0) {
-  const tambahProduk = db.prepare(
+// Mengisi data awal jika tabel kosong
+if (total === 0) {
+  const insert = db.prepare(
     "INSERT INTO produk (nama, harga) VALUES (?, ?)"
   );
 
-  // Memasukkan data awal produk
-  tambahProduk.run("Kaos Tayo Premium", 89000);
-  tambahProduk.run("Kaos Xodiac ori", 145000);
-  tambahProduk.run("Sepatu mcdonald bts original", 800000);
-  tambahProduk.run("Rambut kuntilanak asli", 1200000);
+  const tambahSemua = db.transaction(() => {
+    insert.run("Kaos Tayo Premium", 89000);
+    insert.run("Kaos Xodiac ori", 145000);
+    insert.run("Sepatu McDonald BTS Original", 800000);
+    insert.run("Rambut Kuntilanak Asli", 1200000);
+  });
 
-  console.log("Data awal produk berhasil dimasukkan ke database.");
+  tambahSemua();
+
+  console.log("Data awal berhasil dimasukkan.");
 }
 
-// Uji coba sementara: menampilkan semua data produk di console
+// Menampilkan isi database (opsional, hanya untuk pengecekan)
 const semuaProduk = db.prepare("SELECT * FROM produk").all();
-console.log("Daftar Produk:", semuaProduk);
+console.table(semuaProduk);
 
-// Export koneksi database agar dapat digunakan di file lain
+// Export database
 module.exports = db;
